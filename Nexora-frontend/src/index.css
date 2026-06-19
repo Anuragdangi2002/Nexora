@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-netflix-red: #E50914;
+  --color-netflix-red-hover: #C11119;
+  --color-netflix-dark: #141414;
+  --color-netflix-black: #080808;
+  --color-netflix-gray: #1f1f1f;
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E50914;
+}
+
+/* Custom background pattern to mimic official netflix background */
+.netflix-bg-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+.netflix-banner-overlay {
+  background: linear-gradient(to right, rgba(20, 20, 20, 0.9) 0%, rgba(20, 20, 20, 0.6) 40%, transparent 80%);
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(31, 31, 31, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-heavy {
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Base custom styles */
+body {
+  overflow-x: hidden;
+  background-color: #141414;
+  color: #ffffff;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

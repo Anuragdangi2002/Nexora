@@ -1,0 +1,248 @@
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { User, Mail, Lock, Calendar, HelpCircle, AlertCircle } from 'lucide-react';
+
+const signupSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  dateOfBirth: z.string().min(1, 'Date of Birth is required'),
+  gender: z.enum(['male', 'female', 'other']),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+const Signup = () => {
+  const { signup } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      gender: 'male',
+    },
+  });
+
+  const onSubmit = async (data) => {
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await signup(
+        data.username,
+        data.dateOfBirth,
+        data.gender,
+        data.email,
+        data.password
+      );
+      if (response.success) {
+        // Navigate to the verification page passing the email in state
+        navigate('/verify-email', { state: { email: data.email } });
+      } else {
+        setError(response.message || 'Registration failed.');
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err || 'Signup error. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="relative min-h-screen flex items-center justify-center bg-cover bg-center px-4 py-20"
+      style={{
+        backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://assets.nflxext.com/ffe/siteui/vlv3/ab180a27-b661-44d7-a6d9-940cb32f2f4a/7fb62e44-31fd-4e74-b6e4-167807402914/US-en-20231009-popsignuptwoweeks-perspective_alpha_website_large.jpg')`,
+      }}
+    >
+      {/* Top Header Logo */}
+      <div className="absolute top-0 left-0 p-8">
+        <Link
+          to="/"
+          className="text-4xl font-extrabold tracking-tighter text-[#E50914] select-none"
+          style={{ fontFamily: "'Arial Black', sans-serif" }}
+        >
+          NEXORA
+        </Link>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-lg glass-panel-heavy rounded-lg p-10 shadow-2xl relative overflow-hidden"
+      >
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-netflix-red to-red-600" />
+
+        <h2 className="text-3xl font-extrabold text-white mb-2 tracking-wide">Unlimited movies, TV shows, and more.</h2>
+        <p className="text-zinc-400 text-sm mb-8">Create your account to start streaming.</p>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mb-6 p-4 rounded bg-red-950/40 border border-red-800 text-red-200 flex items-start gap-3 text-sm"
+          >
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </motion.div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Username */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Username</label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <input
+                type="text"
+                {...register('username')}
+                placeholder="john_doe"
+                className={`w-full bg-zinc-800/60 border ${
+                  errors.username ? 'border-red-600 focus:ring-red-600' : 'border-zinc-700/50 focus:border-[#E50914]'
+                } rounded-md pl-10 pr-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#E50914] transition-all text-sm`}
+              />
+            </div>
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-medium">
+                <AlertCircle className="w-3 h-3 shrink-0" />
+                {errors.username.message}
+              </p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Email Address</label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <input
+                type="email"
+                {...register('email')}
+                placeholder="user@example.com"
+                className={`w-full bg-zinc-800/60 border ${
+                  errors.email ? 'border-red-600 focus:ring-red-600' : 'border-zinc-700/50 focus:border-[#E50914]'
+                } rounded-md pl-10 pr-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#E50914] transition-all text-sm`}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-medium">
+                <AlertCircle className="w-3 h-3 shrink-0" />
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Date of Birth & Gender Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Date of Birth */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Date of Birth</label>
+              <div className="relative">
+                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                <input
+                  type="date"
+                  {...register('dateOfBirth')}
+                  className={`w-full bg-zinc-800/60 border ${
+                    errors.dateOfBirth ? 'border-red-600 focus:ring-red-600' : 'border-zinc-700/50 focus:border-[#E50914]'
+                  } rounded-md pl-10 pr-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#E50914] transition-all text-sm`}
+                />
+              </div>
+              {errors.dateOfBirth && (
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-medium">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  {errors.dateOfBirth.message}
+                </p>
+              )}
+            </div>
+
+            {/* Gender */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Gender</label>
+              <div className="relative">
+                <HelpCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                <select
+                  {...register('gender')}
+                  className={`w-full bg-zinc-800/60 border ${
+                    errors.gender ? 'border-red-600 focus:ring-red-600' : 'border-zinc-700/50 focus:border-[#E50914]'
+                  } rounded-md pl-10 pr-4 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-[#E50914] transition-all text-sm appearance-none`}
+                >
+                  <option value="male" className="bg-[#141414]">Male</option>
+                  <option value="female" className="bg-[#141414]">Female</option>
+                  <option value="other" className="bg-[#141414]">Other</option>
+                </select>
+              </div>
+              {errors.gender && (
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-medium">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  {errors.gender.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <input
+                type="password"
+                {...register('password')}
+                placeholder="StrongP@ss123"
+                className={`w-full bg-zinc-800/60 border ${
+                  errors.password ? 'border-red-600 focus:ring-red-600' : 'border-zinc-700/50 focus:border-[#E50914]'
+                } rounded-md pl-10 pr-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#E50914] transition-all text-sm`}
+              />
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-medium">
+                <AlertCircle className="w-3 h-3 shrink-0" />
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-[#E50914] hover:bg-[#C11119] text-white py-3 rounded-md font-bold text-sm tracking-wide transition-all shadow-[0_4px_14px_rgba(229,9,20,0.3)] hover:shadow-[0_4px_20px_rgba(229,9,20,0.5)] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center cursor-pointer"
+          >
+            {isLoading ? (
+              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            ) : (
+              'Sign Up'
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-zinc-800/80 text-sm text-zinc-400 flex items-center justify-between">
+          <span>Already have an account?</span>
+          <Link
+            to="/login"
+            className="text-white hover:underline font-bold text-right hover:text-[#E50914] transition-colors"
+          >
+            Sign in
+          </Link>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Signup;
