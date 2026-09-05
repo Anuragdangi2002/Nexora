@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, User, ShieldAlert, MonitorPlay, CreditCard, Menu, X, Home } from 'lucide-react';
+import { LogOut, ShieldAlert, MonitorPlay, CreditCard, Menu, X, Home } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();

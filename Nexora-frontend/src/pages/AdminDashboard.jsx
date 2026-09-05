@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import {
@@ -12,8 +12,8 @@ import * as z from 'zod';
 import { 
   Users, IndianRupee, Activity, Monitor, ShieldCheck, 
   TrendingUp, RefreshCw, Clock, Search, Lock, AlertCircle, 
-  ShoppingBag, Plus, Edit, Trash2, X, Check, Eye,
-  Film, Upload, Image, Star, ToggleLeft, ToggleRight, Loader2
+  Plus, Edit, Trash2, X, Check,
+  Film, Upload, Star, Loader2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
@@ -138,8 +138,11 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardStats();
-    fetchAdminPlans();
+    const timer = setTimeout(() => {
+      fetchDashboardStats();
+      fetchAdminPlans();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Poll dashboard statistics (active screens/users/transactions)
@@ -153,8 +156,11 @@ const AdminDashboard = () => {
 
   // Fetch plans / movies specifically on tab activate
   useEffect(() => {
-    if (activeTab === 'plans') fetchAdminPlans();
-    if (activeTab === 'movies') fetchAdminMovies();
+    const timer = setTimeout(() => {
+      if (activeTab === 'plans') fetchAdminPlans();
+      if (activeTab === 'movies') fetchAdminMovies();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [activeTab]);
 
   const handleDeleteMovie = async () => {
@@ -268,6 +274,7 @@ const AdminDashboard = () => {
     setModalMode(mode);
     setSelectedPlan(plan);
     setPlanError('');
+    if (planError) setPlanError('');
     setIsPlanModalOpen(true);
   };
 
@@ -1142,8 +1149,8 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
     }
   };
 
-  const UploadField = ({ label, field, uploadType, loading, inputRef, accept }) => (
-    <div className="space-y-1">
+  const renderUploadField = ({ label, field, uploadType, loading, inputRef, accept }) => (
+    <div key={field} className="space-y-1">
       <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">{label}</label>
       <div className="flex gap-2">
         <input
@@ -1309,30 +1316,30 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
               {/* File Uploads */}
               <div className="space-y-3 pt-2 border-t border-zinc-800">
                 <p className="text-xs font-black text-zinc-400 uppercase tracking-wider">Media Assets</p>
-                <UploadField
-                  label="Thumbnail Image"
-                  field="thumbnail"
-                  uploadType="thumbnail"
-                  loading={uploadingThumb}
-                  inputRef={thumbRef}
-                  accept="image/*"
-                />
-                <UploadField
-                  label="Banner Image"
-                  field="banner"
-                  uploadType="banner"
-                  loading={uploadingBanner}
-                  inputRef={bannerRef}
-                  accept="image/*"
-                />
-                <UploadField
-                  label="Trailer / Video URL"
-                  field="videoUrl"
-                  uploadType="trailer"
-                  loading={uploadingTrailer}
-                  inputRef={trailerRef}
-                  accept="video/*"
-                />
+                {renderUploadField({
+                  label: "Thumbnail Image",
+                  field: "thumbnail",
+                  uploadType: "thumbnail",
+                  loading: uploadingThumb,
+                  inputRef: thumbRef,
+                  accept: "image/*",
+                })}
+                {renderUploadField({
+                  label: "Banner Image",
+                  field: "banner",
+                  uploadType: "banner",
+                  loading: uploadingBanner,
+                  inputRef: bannerRef,
+                  accept: "image/*",
+                })}
+                {renderUploadField({
+                  label: "Trailer / Video URL",
+                  field: "videoUrl",
+                  uploadType: "trailer",
+                  loading: uploadingTrailer,
+                  inputRef: trailerRef,
+                  accept: "video/*",
+                })}
               </div>
 
               {/* Flags */}

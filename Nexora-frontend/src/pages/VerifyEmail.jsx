@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
@@ -132,7 +132,7 @@ const VerifyEmail = () => {
     if (otpValue && otpValue.length === 6) {
       handleSubmit(onSubmit)();
     }
-  }, [otpValue]);
+  }, [otpValue, handleSubmit]);
 
   const handleResend = async () => {
     if (countdown > 0 || isResending) return;

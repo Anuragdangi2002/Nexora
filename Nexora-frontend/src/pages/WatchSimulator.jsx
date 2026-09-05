@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { motion } from 'framer-motion';
 
@@ -18,8 +17,6 @@ import {
 } from 'lucide-react';
 
 const WatchSimulator = () => {
-  const { user } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,7 +40,6 @@ const WatchSimulator = () => {
   const [maxScreens, setMaxScreens] = useState(1);
   const [activeScreens, setActiveScreens] = useState(1);
 
-  const [heartbeatCount, setHeartbeatCount] = useState(0);
   const [isHeartbeatActive, setIsHeartbeatActive] = useState(false);
 
   // Device ID
@@ -82,7 +78,7 @@ const WatchSimulator = () => {
   });
 
   // Start Stream
-  const startStream = async () => {
+  const startStream = useCallback(async () => {
     try {
       setStreamingAllowed('checking');
 
@@ -124,10 +120,10 @@ const WatchSimulator = () => {
         );
       }
     }
-  };
+  }, [deviceId, screenName]);
 
   // Stop Stream
-  const stopStream = async () => {
+  const stopStream = useCallback(async () => {
     try {
       await API.post('/screens/stop', {
         deviceId,
@@ -135,19 +131,22 @@ const WatchSimulator = () => {
     } catch (err) {
       console.error('Error stopping stream', err);
     }
-  };
+  }, [deviceId]);
 
   // Start on mount
   useEffect(() => {
-    startStream();
+    const timer = setTimeout(() => {
+      startStream();
+    }, 0);
 
     const handleBeforeUnload = () => {
       const token =
         localStorage.getItem('netflix_token');
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
       if (token && deviceId) {
         fetch(
-          'http://localhost:5000/api/screens/stop',
+          `${baseUrl}/screens/stop`,
           {
             method: 'POST',
 
@@ -170,6 +169,7 @@ const WatchSimulator = () => {
     );
 
     return () => {
+      clearTimeout(timer);
       setIsHeartbeatActive(false);
 
       stopStream();
@@ -179,7 +179,7 @@ const WatchSimulator = () => {
         handleBeforeUnload
       );
     };
-  }, []);
+  }, [startStream, stopStream, deviceId]);
 
   // Heartbeat
   useEffect(() => {
@@ -194,8 +194,6 @@ const WatchSimulator = () => {
         await API.post('/screens/heartbeat', {
           deviceId,
         });
-
-        setHeartbeatCount((c) => c + 1);
       } catch (err) {
         console.error('Heartbeat lost', err);
 

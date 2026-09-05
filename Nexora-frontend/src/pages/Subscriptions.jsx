@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { motion } from 'framer-motion';
-import { Check, ShieldCheck, XCircle, AlertTriangle, Monitor, Tv, Smartphone, RefreshCw } from 'lucide-react';
+import { Check, ShieldCheck, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
 const loadRazorpay = () => {
@@ -16,7 +16,7 @@ const loadRazorpay = () => {
 };
 
 const Subscriptions = () => {
-  const { user, subscribe, cancelSubscription, fetchProfile } = useAuth();
+  const { user, subscribe, cancelSubscription } = useAuth();
   const [plans, setPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null); // stores plan._id or 'cancel'

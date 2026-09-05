@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import API from '../services/api';
 
 const AuthContext = createContext(null);
@@ -10,6 +10,13 @@ export const AuthProvider = ({ children }) => {
   });
   const [token, setToken] = useState(() => localStorage.getItem('netflix_token'));
   const [loading, setLoading] = useState(true);
+
+  const logoutState = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('netflix_token');
+    localStorage.removeItem('netflix_user');
+  }, []);
 
   // Sync token and user in localStorage
   useEffect(() => {
@@ -50,14 +57,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
     initAuth();
-  }, [token]);
-
-  const logoutState = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('netflix_token');
-    localStorage.removeItem('netflix_user');
-  };
+  }, [token, logoutState]);
 
   const signup = async (username, dateOfBirth, gender, email, password) => {
     try {
@@ -224,6 +224,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

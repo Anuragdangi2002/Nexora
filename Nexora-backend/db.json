@@ -1,8 +1,125 @@
 {
-  "users": {},
-  "plans": {},
+  "users": {
+    "kscyekwblx": {
+      "username": "admin_tester",
+      "dateOfBirth": "1988-12-10",
+      "gender": "female",
+      "email": "admin_test_1788492338386@example.com",
+      "passwordHash": "$2b$10$IMOiiySwqmyqGZVXqqGKPO0E.aa6ag.GJIKFUCOPG8Kg3JbRS4NN.",
+      "isVerified": true,
+      "role": "admin",
+      "otp": null,
+      "otpExpires": null,
+      "subscription": {
+        "status": "Free",
+        "planId": null,
+        "planName": "Free",
+        "maxScreens": 0,
+        "expiresAt": null
+      },
+      "createdAt": "2026-09-04T03:25:38.912Z",
+      "updatedAt": "2026-09-04T03:25:39.041Z",
+      "lastLoginAt": "2026-09-04T03:25:39.041Z"
+    },
+    "e4su6z3pbj8": {
+      "username": "standard_tester",
+      "dateOfBirth": "1995-05-20",
+      "gender": "male",
+      "email": "user_test_1788492338386@example.com",
+      "passwordHash": "$2b$10$ifbijVqx2TEkn74GWbf2POvThj68VDGxSeOV3BgwQtyFvdSRQmWRq",
+      "isVerified": true,
+      "role": "user",
+      "otp": null,
+      "otpExpires": null,
+      "subscription": {
+        "status": "Free",
+        "planId": null,
+        "planName": "Free",
+        "maxScreens": 0,
+        "expiresAt": null
+      },
+      "createdAt": "2026-09-04T03:25:39.154Z",
+      "updatedAt": "2026-09-04T03:25:39.423Z",
+      "lastLoginAt": "2026-09-04T03:25:39.259Z"
+    },
+    "admin_feg81tfqxg": {
+      "id": "admin_feg81tfqxg",
+      "username": "NexoraAdmin",
+      "email": "admin@nexora.com",
+      "passwordHash": "$2b$10$SXH4bYGyGnvlehTFCEWdYeWb9zgYWysfpEim8FRnBXPRpKw9TGIu.",
+      "role": "admin",
+      "isVerified": true,
+      "dateOfBirth": "1990-01-01",
+      "gender": "other",
+      "subscription": {
+        "status": "active",
+        "planId": "admin_plan",
+        "planName": "Premium",
+        "maxScreens": 10,
+        "expiresAt": "2099-12-31T23:59:59.999Z"
+      },
+      "createdAt": "2026-09-05T02:30:26.583Z",
+      "updatedAt": "2026-09-05T02:35:39.968Z",
+      "lastLoginAt": "2026-09-05T02:35:39.968Z"
+    }
+  },
+  "plans": {
+    "dm0t7fghrtg": {
+      "name": "Basic",
+      "price": 149,
+      "maxScreens": 1,
+      "resolution": "720p",
+      "videoQuality": "Good",
+      "description": "Watch on 1 screen in Standard Definition (720p).",
+      "isActive": true,
+      "createdAt": "2026-09-04T03:25:34.646Z",
+      "updatedAt": "2026-09-04T03:25:34.647Z"
+    },
+    "xyz61vjnh1g": {
+      "name": "Standard",
+      "price": 899,
+      "maxScreens": 2,
+      "resolution": "1080p",
+      "videoQuality": "Better",
+      "description": "Watch on 2 screens at the same time in Full HD (1080p).",
+      "isActive": true,
+      "createdAt": "2026-09-04T03:25:34.647Z",
+      "updatedAt": "2026-09-04T03:25:34.647Z"
+    },
+    "rtr9d2o0i8g": {
+      "name": "Premium",
+      "price": 1439,
+      "maxScreens": 4,
+      "resolution": "4K+HDR",
+      "videoQuality": "Best",
+      "description": "Watch on 4 screens at the same time in Ultra HD (4K+HDR).",
+      "isActive": true,
+      "createdAt": "2026-09-04T03:25:34.647Z",
+      "updatedAt": "2026-09-04T03:25:34.647Z"
+    },
+    "n3bmvqd7eg": {
+      "name": "Super Premium",
+      "price": 1999,
+      "maxScreens": 6,
+      "resolution": "4K+HDR",
+      "videoQuality": "Best",
+      "description": "Stream on 6 screens concurrently in high fidelity.",
+      "isActive": true,
+      "createdAt": "2026-09-04T03:25:39.308Z",
+      "updatedAt": "2026-09-04T03:25:39.308Z"
+    }
+  },
   "sessions": {},
-  "transactions": {},
+  "transactions": {
+    "m9kf9u9xv8p": {
+      "userId": "e4su6z3pbj8",
+      "email": "user_test_1788492338386@example.com",
+      "planId": "dm0t7fghrtg",
+      "planName": "Basic",
+      "pricePaid": 149,
+      "timestamp": "2026-09-04T03:25:39.322Z"
+    }
+  },
   "blacklistedTokens": {},
   "movies": {
     "movie_001": {
@@ -18,7 +135,7 @@
       "year": 2017,
       "featured": true,
       "trending": true,
-      "createdAt": "2026-06-02T05:03:05.862Z"
+      "createdAt": "2026-09-05T02:34:00.320Z"
     },
     "movie_002": {
       "id": "movie_002",
@@ -33,7 +150,7 @@
       "year": 2016,
       "featured": false,
       "trending": true,
-      "createdAt": "2026-06-01T05:03:05.862Z"
+      "createdAt": "2026-09-04T02:34:00.320Z"
     },
     "movie_003": {
       "id": "movie_003",
@@ -48,7 +165,7 @@
       "year": 2022,
       "featured": false,
       "trending": true,
-      "createdAt": "2026-05-31T05:03:05.862Z"
+      "createdAt": "2026-09-03T02:34:00.320Z"
     },
     "movie_004": {
       "id": "movie_004",
@@ -63,7 +180,7 @@
       "year": 2008,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-30T05:03:05.862Z"
+      "createdAt": "2026-09-02T02:34:00.320Z"
     },
     "movie_005": {
       "id": "movie_005",
@@ -78,7 +195,7 @@
       "year": 2008,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-29T05:03:05.862Z"
+      "createdAt": "2026-09-01T02:34:00.320Z"
     },
     "movie_006": {
       "id": "movie_006",
@@ -93,7 +210,7 @@
       "year": 1994,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-28T05:03:05.862Z"
+      "createdAt": "2026-08-31T02:34:00.320Z"
     },
     "movie_007": {
       "id": "movie_007",
@@ -108,7 +225,7 @@
       "year": 2013,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-27T05:03:05.862Z"
+      "createdAt": "2026-08-30T02:34:00.320Z"
     },
     "movie_008": {
       "id": "movie_008",
@@ -123,7 +240,7 @@
       "year": 2019,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-26T05:03:05.862Z"
+      "createdAt": "2026-08-29T02:34:00.320Z"
     },
     "movie_009": {
       "id": "movie_009",
@@ -138,7 +255,7 @@
       "year": 2007,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-25T05:03:05.862Z"
+      "createdAt": "2026-08-28T02:34:00.320Z"
     },
     "movie_010": {
       "id": "movie_010",
@@ -153,7 +270,7 @@
       "year": 2000,
       "featured": false,
       "trending": false,
-      "createdAt": "2026-05-24T05:03:05.862Z"
+      "createdAt": "2026-08-27T02:34:00.320Z"
     }
   }
 }

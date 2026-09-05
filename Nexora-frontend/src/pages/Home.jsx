@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +12,6 @@ import {
   getHomepageMovies,
   addToMyList,
   removeFromMyList,
-  updateContinueWatching,
 } from '../services/movieService';
 
 // ─── Skeleton Card ────────────────────────────────────────────────────────────
@@ -29,7 +28,6 @@ const SkeletonCard = () => (
 // ─── Movie Card ───────────────────────────────────────────────────────────────
 const MovieCard = ({ movie, onPlay, onToggleList, isInList }) => {
   const [listLoading, setListLoading] = useState(false);
-  const [hovered, setHovered] = useState(false);
 
   const handleListToggle = async (e) => {
     e.stopPropagation();
@@ -47,8 +45,6 @@ const MovieCard = ({ movie, onPlay, onToggleList, isInList }) => {
     <motion.div
       whileHover={{ scale: 1.05, zIndex: 10 }}
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       className="rounded-lg overflow-hidden group cursor-pointer relative shadow-md select-none bg-zinc-900"
       style={{ transformOrigin: 'center bottom' }}
     >
@@ -60,22 +56,41 @@ const MovieCard = ({ movie, onPlay, onToggleList, isInList }) => {
         <img
           src={thumbnail}
           alt={movie.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          onError={(e) => {
-            e.target.src = `https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80`;
-          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Rating badge */}
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+
+        {/* Play Icon Badge */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-12 h-12 rounded-full bg-[#E50914] text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+            <Play className="w-6 h-6 fill-current ml-0.5" />
+          </div>
+        </div>
+
+        {/* Top Badges */}
+        <div className="absolute top-2 left-2 flex items-center gap-1.5 z-10">
+          {movie.featured && (
+            <span className="bg-[#E50914] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow">
+              Featured
+            </span>
+          )}
+          {movie.trending && (
+            <span className="bg-amber-500 text-black text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow flex items-center gap-0.5">
+              <Flame className="w-2.5 h-2.5 fill-current" /> Trending
+            </span>
+          )}
+        </div>
+
+        {/* Rating */}
         {rating && (
-          <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm px-1.5 py-0.5 rounded flex items-center gap-1 text-[10px] font-bold text-amber-400">
+          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur text-amber-400 text-[10px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1">
             <Star className="w-2.5 h-2.5 fill-current" />
             {rating}
           </div>
         )}
-
         {/* Year badge */}
         {movie.year && (
           <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-zinc-300">
@@ -153,7 +168,7 @@ const MovieCard = ({ movie, onPlay, onToggleList, isInList }) => {
 
 // ─── Movie Row ────────────────────────────────────────────────────────────────
 const MovieRow = ({ title, movies, icon: Icon, onPlay, onToggleList, myListIds, loading }) => {
-  const scrollRef = React.useRef(null);
+  const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -373,7 +388,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    fetchHomepage();
+    const timer = setTimeout(() => {
+      fetchHomepage();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchHomepage]);
 
   const handlePlay = (movie) => {

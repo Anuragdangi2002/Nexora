@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +46,6 @@ const ForgotPassword = () => {
     register: registerReset,
     handleSubmit: handleResetSubmit,
     setValue: setResetValue,
-    trigger: triggerReset,
     formState: { errors: resetErrors },
   } = useForm({
     resolver: zodResolver(resetSchema),
