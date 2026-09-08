@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Import Screens
@@ -15,6 +15,7 @@ import MovieDetail from './pages/MovieDetail';
 // Protected Route Component to prevent unauthenticated access
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -26,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
@@ -91,15 +92,11 @@ function App() {
             }
           />
 
-          {/* Protected Client Browse & Management Areas */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          {/* Public Homepage & Movie Details */}
+          <Route path="/" element={<Home />} />
+          <Route path="/movie/:id" element={<MovieDetail />} />
+
+          {/* Protected Actions / Areas */}
           <Route
             path="/subscriptions"
             element={
@@ -113,14 +110,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <WatchSimulator />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/movie/:id"
-            element={
-              <ProtectedRoute>
-                <MovieDetail />
               </ProtectedRoute>
             }
           />

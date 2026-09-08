@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import {
   Play,
@@ -23,6 +24,7 @@ import {
 const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,10 @@ const MovieDetail = () => {
   }, [id]);
 
   const handleToggleList = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: `/movie/${id}` } });
+      return;
+    }
     setListLoading(true);
 
     try {
@@ -94,6 +100,22 @@ const MovieDetail = () => {
   const handlePlayTrailer = () => {
     if (!movie?.videoUrl) {
       showToast('Trailer not available');
+      return;
+    }
+
+    if (!user) {
+      navigate('/login', {
+        state: {
+          from: {
+            pathname: '/watch',
+            state: {
+              videoUrl: movie.videoUrl,
+              title: movie.title,
+              movieId: movie._id || movie.id,
+            },
+          },
+        },
+      });
       return;
     }
 

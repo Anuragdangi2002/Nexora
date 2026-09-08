@@ -395,14 +395,38 @@ const Home = () => {
   }, [fetchHomepage]);
 
   const handlePlay = (movie) => {
-    if (movie?._id || movie?.id) {
-      navigate(`/movie/${movie._id || movie.id}`);
+    const videoUrl = movie?.videoUrl || movie?.trailerUrl || movie?.trailer;
+    const title = movie?.title || 'Movie Trailer';
+    const movieId = movie?._id || movie?.id;
+
+    if (!user) {
+      navigate('/login', {
+        state: {
+          from: {
+            pathname: '/watch',
+            state: { videoUrl, title, movieId },
+          },
+        },
+      });
+      return;
+    }
+
+    if (videoUrl) {
+      navigate('/watch', {
+        state: { videoUrl, title, movieId },
+      });
+    } else if (movieId) {
+      navigate(`/movie/${movieId}`);
     } else {
       navigate('/watch');
     }
   };
 
   const handleToggleList = async (movieId, currentlyInList) => {
+    if (!user) {
+      navigate('/login', { state: { from: '/' } });
+      return;
+    }
     if (!movieId) return;
     try {
       if (currentlyInList) {

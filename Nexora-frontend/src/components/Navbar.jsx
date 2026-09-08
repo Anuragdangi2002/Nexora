@@ -31,8 +31,8 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Browse', path: '/', icon: Home, show: !!user },
-    { name: 'Plans', path: '/subscriptions', icon: CreditCard, show: !!user },
+    { name: 'Browse', path: '/', icon: Home, show: true },
+    { name: 'Plans', path: '/subscriptions', icon: CreditCard, show: true },
     { name: 'Stream Simulator', path: '/watch', icon: MonitorPlay, show: !!user },
     { name: 'Admin Panel', path: '/admin', icon: ShieldAlert, show: user?.role === 'admin' },
   ];
@@ -73,35 +73,33 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            {user && (
-              <div className="hidden md:flex items-center gap-6">
-                {navLinks
-                  .filter((link) => link.show)
-                  .map((link) => {
-                    const isActive = location.pathname === link.path;
-                    return (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        className={`text-sm font-medium tracking-wide transition-colors relative py-1 ${
-                          isActive
-                            ? 'text-white font-semibold'
-                            : 'text-zinc-300 hover:text-zinc-400'
-                        }`}
-                      >
-                        {link.name}
-                        {isActive && (
-                          <motion.div
-                            layoutId="activeNavLine"
-                            className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#E50914]"
-                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                          />
-                        )}
-                      </Link>
-                    );
-                  })}
-              </div>
-            )}
+            <div className="hidden md:flex items-center gap-6">
+              {navLinks
+                .filter((link) => link.show)
+                .map((link) => {
+                  const isActive = location.pathname === link.path;
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`text-sm font-medium tracking-wide transition-colors relative py-1 ${
+                        isActive
+                          ? 'text-white font-semibold'
+                          : 'text-zinc-300 hover:text-zinc-400'
+                      }`}
+                    >
+                      {link.name}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeNavLine"
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#E50914]"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+            </div>
           </div>
 
           {/* User Section & Profile Panel */}
@@ -199,26 +197,24 @@ const Navbar = () => {
                 to="/login"
                 className="bg-[#E50914] text-white text-sm font-semibold px-4 py-1.5 rounded hover:bg-[#C11119] transition-all hover:shadow-[0_0_12px_rgba(229,9,20,0.4)] active:scale-95"
               >
-                Sign In
+                Sign In / Sign Up
               </Link>
             )}
 
             {/* Mobile Hamburger menu */}
-            {user && (
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/40 focus:outline-none"
-              >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            )}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/40 focus:outline-none"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu Panel */}
       <AnimatePresence>
-        {isMobileMenuOpen && user && (
+        {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -239,24 +235,36 @@ const Navbar = () => {
                     <span>{link.name}</span>
                   </Link>
                 ))}
-              <div className="my-2 border-t border-zinc-800 px-3 pt-2">
-                <div className="flex items-center gap-2 mb-2 px-3">
-                  <span className="text-sm font-medium text-zinc-400">Tier:</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getPlanBadge(user.subscription?.planName || 'Free')}`}>
-                    {user.subscription?.planName || 'Free'}
-                  </span>
+              {user ? (
+                <div className="my-2 border-t border-zinc-800 px-3 pt-2">
+                  <div className="flex items-center gap-2 mb-2 px-3">
+                    <span className="text-sm font-medium text-zinc-400">Tier:</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getPlanBadge(user.subscription?.planName || 'Free')}`}>
+                      {user.subscription?.planName || 'Free'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium text-red-500 hover:bg-red-950/15"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleLogout();
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium text-red-500 hover:bg-red-950/15"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
+              ) : (
+                <div className="my-2 border-t border-zinc-800 px-3 pt-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium text-white bg-[#E50914] hover:bg-[#C11119]"
+                  >
+                    <span>Sign In / Sign Up</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

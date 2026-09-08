@@ -72,4 +72,62 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+const optionalAuthMiddleware = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      req.user = null;
+      return next();
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+
+    // Check token blacklist
+    const blacklistRef = doc(db, "blacklistedTokens", token);
+    const blacklistSnap = await getDoc(blacklistRef);
+    if (blacklistSnap.exists()) {
+      req.user = null;
+      return next();
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      req.user = null;
+      return next();
+    }
+
+    // Retrieve user from Firestore
+    const userRef = doc(db, "users", decoded.userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      req.user = null;
+      return next();
+    }
+
+    const userData = userSnap.data();
+    req.user = {
+      id: userSnap.id,
+      ...userData
+    };
+    req.token = token;
+    req.tokenExpiry = decoded.exp;
+
+    next();
+  } catch (error) {
+    console.error("Optional auth middleware error:", error);
+    req.user = null;
+    next();
+  }
+};
+
 module.exports = authMiddleware;
+module.exports.authMiddleware = authMiddleware;
+module.exports.optionalAuthMiddleware = optionalAuthMiddleware;
+

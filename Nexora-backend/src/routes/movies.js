@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const movieController = require("../controllers/movieController");
-const authMiddleware = require("../middleware/auth");
+const { authMiddleware, optionalAuthMiddleware } = require("../middleware/auth");
 
-// Secure all movie routes with authMiddleware
-router.get("/homepage", authMiddleware, movieController.getHomepageMovies);
+// Public browsing routes (optional authentication)
+router.get("/homepage", optionalAuthMiddleware, movieController.getHomepageMovies);
+router.get("/:id", optionalAuthMiddleware, movieController.getMovieById);
+
+// Authenticated user movie actions
 router.post("/my-list", authMiddleware, movieController.addToMyList);
 router.delete("/my-list/:id", authMiddleware, movieController.removeFromMyList);
 router.post("/continue-watching", authMiddleware, movieController.updateContinueWatching);
-router.get("/:id", authMiddleware, movieController.getMovieById);
 
 module.exports = router;
+

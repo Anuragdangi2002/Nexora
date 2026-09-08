@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ const loginSchema = z.object({
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,12 @@ const Login = () => {
 
     try {
       await login(data.email, data.password);
-      navigate('/');
+      const from = location.state?.from;
+      if (from) {
+        navigate(from.pathname || from, { state: from.state, replace: true });
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error(err);
       setError(err || 'Invalid email or password.');

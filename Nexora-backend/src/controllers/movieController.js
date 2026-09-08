@@ -21,7 +21,7 @@ const getHomepageMovies = async (req, res) => {
 
     // 3. Continue Watching: joined details based on user's watching progress
     const continueWatching = [];
-    const userContinueWatching = user.continueWatching || [];
+    const userContinueWatching = user ? (user.continueWatching || []) : [];
     for (const cw of userContinueWatching) {
       const movie = allMovies.find(m => m.id === cw.movieId);
       if (movie) {
@@ -50,7 +50,7 @@ const getHomepageMovies = async (req, res) => {
 
     // 9. My List: joined details of user's personal movie list
     const myList = [];
-    const userMyList = user.myList || [];
+    const userMyList = user ? (user.myList || []) : [];
     for (const mId of userMyList) {
       const movie = allMovies.find(m => m.id === mId);
       if (movie) {
