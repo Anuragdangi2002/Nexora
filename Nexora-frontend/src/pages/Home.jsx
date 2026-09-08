@@ -36,7 +36,7 @@ const MovieCard = ({ movie, onPlay, onToggleList, isInList }) => {
     setListLoading(false);
   };
 
-  const thumbnail = movie.thumbnail || movie.image ||
+  const thumbnail = movie.thumbnailUrl || movie.thumbnail || movie.image ||
     `https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80`;
 
   const rating = movie.rating ? parseFloat(movie.rating).toFixed(1) : null;
@@ -250,7 +250,7 @@ const HeroBanner = ({ movie, onPlay, onToggleList, isInList }) => {
     setListLoading(false);
   };
 
-  const bannerUrl = movie?.banner || movie?.thumbnail ||
+  const bannerUrl = movie?.bannerUrl || movie?.banner || movie?.thumbnailUrl || movie?.thumbnail ||
     'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80';
 
   return (
@@ -395,7 +395,7 @@ const Home = () => {
   }, [fetchHomepage]);
 
   const handlePlay = (movie) => {
-    const videoUrl = movie?.videoUrl || movie?.trailerUrl || movie?.trailer;
+    const videoUrl = movie?.trailerVideoUrl || movie?.videoUrl || movie?.trailerUrl || movie?.trailer;
     const title = movie?.title || 'Movie Trailer';
     const movieId = movie?._id || movie?.id;
 

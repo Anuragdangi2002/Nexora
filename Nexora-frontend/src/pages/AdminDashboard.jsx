@@ -883,9 +883,9 @@ const AdminDashboard = () => {
                                 <tr key={movie._id || movie.id} className="border-b border-zinc-900/60 hover:bg-zinc-800/10">
                                   <td className="py-3.5">
                                     <div className="flex items-center gap-2.5">
-                                      {movie.thumbnail ? (
+                                      {movie.thumbnailUrl || movie.thumbnail ? (
                                         <img
-                                          src={movie.thumbnail}
+                                          src={movie.thumbnailUrl || movie.thumbnail}
                                           alt={movie.title}
                                           className="w-10 h-7 rounded object-cover border border-zinc-800 shrink-0"
                                           onError={(e) => { e.target.style.display = 'none'; }}
@@ -1075,6 +1075,7 @@ const AdminDashboard = () => {
 };
 
 // ─── Movie Form Modal ────────────────────────────────────────────────────────
+// ─── Movie Form Modal ────────────────────────────────────────────────────────
 const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -1088,6 +1089,9 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
     thumbnail: movie?.thumbnail || '',
     banner: movie?.banner || '',
     videoUrl: movie?.videoUrl || '',
+    thumbnailUrl: movie?.thumbnailUrl || '',
+    bannerUrl: movie?.bannerUrl || '',
+    trailerVideoUrl: movie?.trailerVideoUrl || '',
     genre: movie?.genre || '',
     category: movie?.category || 'Trending',
     rating: movie?.rating || '',
@@ -1125,9 +1129,46 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
     }
   };
 
+  const isValidUrl = (string) => {
+    if (!string || !string.trim()) return true;
+    try {
+      const url = new URL(string.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (_) {
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) { setSubmitError('Title is required.'); return; }
+
+    if (form.thumbnailUrl && !isValidUrl(form.thumbnailUrl)) {
+      setSubmitError('Thumbnail URL must be a valid http:// or https:// URL.');
+      return;
+    }
+    if (form.bannerUrl && !isValidUrl(form.bannerUrl)) {
+      setSubmitError('Banner URL must be a valid http:// or https:// URL.');
+      return;
+    }
+    if (form.trailerVideoUrl && !isValidUrl(form.trailerVideoUrl)) {
+      setSubmitError('Trailer Video URL must be a valid http:// or https:// URL.');
+      return;
+    }
+
+    if (!form.thumbnail && !form.thumbnailUrl) {
+      setSubmitError('Please upload a Thumbnail file or provide an external Thumbnail URL.');
+      return;
+    }
+    if (!form.banner && !form.bannerUrl) {
+      setSubmitError('Please upload a Banner file or provide an external Banner URL.');
+      return;
+    }
+    if (!form.videoUrl && !form.trailerVideoUrl) {
+      setSubmitError('Please upload a Trailer file or provide an external Trailer URL.');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError('');
     try {
@@ -1149,43 +1190,71 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
     }
   };
 
-  const renderUploadField = ({ label, field, uploadType, loading, inputRef, accept }) => (
-    <div key={field} className="space-y-1">
-      <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">{label}</label>
-      <div className="flex gap-2">
-        <input
-          type="text"
-          name={field}
-          value={form[field]}
-          onChange={handleChange}
-          placeholder="URL or upload below"
-          className="flex-1 bg-zinc-800 border border-zinc-700 focus:border-[#E50914] rounded px-3 py-1.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#E50914] text-xs"
-        />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={loading}
-          className="bg-zinc-700 hover:bg-zinc-600 text-white px-2.5 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
-        >
-          {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-          Upload
-        </button>
+  const renderUploadField = ({ label, field, urlField, uploadType, loading, inputRef, accept, urlPlaceholder }) => {
+    const activePreviewUrl = form[urlField] || form[field];
+    return (
+      <div key={field} className="space-y-1.5 p-3 rounded bg-zinc-800/40 border border-zinc-800">
+        <label className="text-xs font-bold text-zinc-200 uppercase tracking-wider block">{label}</label>
+        
+        {/* Computer Upload */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={loading}
+            className="bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+            Upload Computer File
+          </button>
+          <input
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files[0], uploadType)}
+          />
+          <span className="text-[11px] text-zinc-400 truncate flex-1">
+            {form[field] ? `Uploaded file: ${form[field].split('/').pop()}` : 'No computer file uploaded'}
+          </span>
+        </div>
+
+        {/* Optional External URL */}
+        <div className="space-y-1 pt-1">
+          <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">OR External URL (Optional)</label>
+          <input
+            type="text"
+            name={urlField}
+            value={form[urlField]}
+            onChange={handleChange}
+            placeholder={urlPlaceholder}
+            className="w-full bg-zinc-900 border border-zinc-700/60 focus:border-[#E50914] rounded px-2.5 py-1.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#E50914] text-xs"
+          />
+        </div>
+
+        {/* Active Media Source Indicator */}
+        {activePreviewUrl && (
+          <div className="mt-1.5 flex items-center gap-2.5 pt-1 border-t border-zinc-800/60">
+            {uploadType !== 'trailer' ? (
+              <img
+                src={activePreviewUrl}
+                alt="preview"
+                className="w-16 h-10 object-cover rounded border border-zinc-700"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            ) : (
+              <span className="text-[10px] text-emerald-400 font-mono truncate max-w-[240px]">
+                {activePreviewUrl}
+              </span>
+            )}
+            <span className="text-[10px] text-zinc-400 font-medium">
+              (Active: {form[urlField] ? 'External URL' : 'Uploaded File'})
+            </span>
+          </div>
+        )}
       </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={accept}
-        className="hidden"
-        onChange={(e) => handleFileUpload(e.target.files[0], uploadType)}
-      />
-      {form[field] && uploadType !== 'trailer' && (
-        <img src={form[field]} alt="preview" className="mt-1 w-20 h-12 object-cover rounded border border-zinc-700" onError={(e) => { e.target.style.display='none'; }} />
-      )}
-      {form[field] && uploadType === 'trailer' && (
-        <p className="text-[10px] text-zinc-500 truncate mt-1">{form[field]}</p>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -1313,32 +1382,38 @@ const MovieFormModal = ({ mode, movie, onClose, onSuccess }) => {
                 </div>
               </div>
 
-              {/* File Uploads */}
+              {/* File Uploads & Optional External URLs */}
               <div className="space-y-3 pt-2 border-t border-zinc-800">
                 <p className="text-xs font-black text-zinc-400 uppercase tracking-wider">Media Assets</p>
                 {renderUploadField({
                   label: "Thumbnail Image",
                   field: "thumbnail",
+                  urlField: "thumbnailUrl",
                   uploadType: "thumbnail",
                   loading: uploadingThumb,
                   inputRef: thumbRef,
                   accept: "image/*",
+                  urlPlaceholder: "https://example.com/thumbnail.jpg",
                 })}
                 {renderUploadField({
                   label: "Banner Image",
                   field: "banner",
+                  urlField: "bannerUrl",
                   uploadType: "banner",
                   loading: uploadingBanner,
                   inputRef: bannerRef,
                   accept: "image/*",
+                  urlPlaceholder: "https://example.com/banner.jpg",
                 })}
                 {renderUploadField({
-                  label: "Trailer / Video URL",
+                  label: "Trailer Video",
                   field: "videoUrl",
+                  urlField: "trailerVideoUrl",
                   uploadType: "trailer",
                   loading: uploadingTrailer,
                   inputRef: trailerRef,
                   accept: "video/*",
+                  urlPlaceholder: "https://example.com/trailer.mp4 or https://youtube.com/watch?v=...",
                 })}
               </div>
 

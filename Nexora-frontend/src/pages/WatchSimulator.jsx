@@ -42,6 +42,19 @@ const WatchSimulator = () => {
 
   const [isHeartbeatActive, setIsHeartbeatActive] = useState(false);
 
+  // Helper to convert YouTube URLs to embed format
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11
+      ? `https://www.youtube.com/embed/${match[2]}?autoplay=1`
+      : null;
+  };
+
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(videoUrl);
+  const isYouTube = !!youtubeEmbedUrl;
+
   // Device ID
   const [deviceId] = useState(() => {
     let devId = localStorage.getItem('netflix_device_id');
@@ -424,24 +437,32 @@ const WatchSimulator = () => {
             setIsControlsVisible(true)
           }
         >
-          {/* ✅ REAL VIDEO */}
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="w-full h-full object-contain bg-black"
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={
-              handleLoadedMetadata
-            }
-            autoPlay
-            playsInline
-            controls={false}
-          >
-            <source
-              src={videoUrl}
-              type="video/mp4"
+          {/* ✅ VIDEO PLAYER OR YOUTUBE EMBED */}
+          {isYouTube ? (
+            <iframe
+              src={youtubeEmbedUrl}
+              title={movieTitle}
+              className="w-full h-full object-contain bg-black border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
-          </video>
+          ) : (
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              className="w-full h-full object-contain bg-black"
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              autoPlay
+              playsInline
+              controls={false}
+            >
+              <source
+                src={videoUrl}
+                type="video/mp4"
+              />
+            </video>
+          )}
 
           {/* TOP BAR */}
           <div

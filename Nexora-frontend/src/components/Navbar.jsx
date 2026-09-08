@@ -197,7 +197,7 @@ const Navbar = () => {
                 to="/login"
                 className="bg-[#E50914] text-white text-sm font-semibold px-4 py-1.5 rounded hover:bg-[#C11119] transition-all hover:shadow-[0_0_12px_rgba(229,9,20,0.4)] active:scale-95"
               >
-                Sign In / Sign Up
+                Sign In
               </Link>
             )}
 
@@ -261,7 +261,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium text-white bg-[#E50914] hover:bg-[#C11119]"
                   >
-                    <span>Sign In / Sign Up</span>
+                    <span>Sign In</span>
                   </Link>
                 </div>
               )}

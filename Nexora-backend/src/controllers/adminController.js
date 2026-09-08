@@ -148,12 +148,20 @@ const getDashboardStats = async (req, res) => {
 // POST /api/admin/movies (Add Movie)
 const addMovie = async (req, res) => {
   try {
-    const { title, description, thumbnail, banner, videoUrl, genre, category, rating, year, featured, trending } = req.body;
+    const {
+      title, description, thumbnail, banner, videoUrl,
+      thumbnailUrl, bannerUrl, trailerVideoUrl,
+      genre, category, rating, year, featured, trending
+    } = req.body;
 
-    if (!title || !description || !thumbnail || !banner || !videoUrl || !genre || !category) {
+    const effectiveThumb = thumbnailUrl || thumbnail;
+    const effectiveBanner = bannerUrl || banner;
+    const effectiveVideo = trailerVideoUrl || videoUrl;
+
+    if (!title || !description || !effectiveThumb || !effectiveBanner || !effectiveVideo || !genre || !category) {
       return res.status(422).json({
         success: false,
-        message: "Missing required fields: title, description, thumbnail, banner, videoUrl, genre, category",
+        message: "Missing required fields: title, description, thumbnail (file or URL), banner (file or URL), trailer (file or URL), genre, category",
         data: null
       });
     }
@@ -163,9 +171,12 @@ const addMovie = async (req, res) => {
       id: movieId,
       title,
       description,
-      thumbnail,
-      banner,
-      videoUrl, // Holds trailer or video stream
+      thumbnail: thumbnail || thumbnailUrl || "",
+      banner: banner || bannerUrl || "",
+      videoUrl: videoUrl || trailerVideoUrl || "",
+      thumbnailUrl: thumbnailUrl || "",
+      bannerUrl: bannerUrl || "",
+      trailerVideoUrl: trailerVideoUrl || "",
       genre,
       category,
       rating: rating !== undefined ? Number(rating) : 0,
@@ -211,7 +222,8 @@ const editMovie = async (req, res) => {
 
     const updates = {};
     const allowedFields = [
-      "title", "description", "thumbnail", "banner", "videoUrl", 
+      "title", "description", "thumbnail", "banner", "videoUrl",
+      "thumbnailUrl", "bannerUrl", "trailerVideoUrl",
       "genre", "category", "rating", "year", "featured", "trending"
     ];
     

@@ -98,7 +98,8 @@ const MovieDetail = () => {
 
   // ✅ FIXED PLAY FUNCTION
   const handlePlayTrailer = () => {
-    if (!movie?.videoUrl) {
+    const videoUrl = movie?.trailerVideoUrl || movie?.videoUrl;
+    if (!videoUrl) {
       showToast('Trailer not available');
       return;
     }
@@ -109,7 +110,7 @@ const MovieDetail = () => {
           from: {
             pathname: '/watch',
             state: {
-              videoUrl: movie.videoUrl,
+              videoUrl,
               title: movie.title,
               movieId: movie._id || movie.id,
             },
@@ -121,7 +122,7 @@ const MovieDetail = () => {
 
     navigate('/watch', {
       state: {
-        videoUrl: movie.videoUrl,
+        videoUrl,
         title: movie.title,
         movieId: movie._id || movie.id,
       },
@@ -172,7 +173,9 @@ const MovieDetail = () => {
   }
 
   const banner =
+    movie?.bannerUrl ||
     movie?.banner ||
+    movie?.thumbnailUrl ||
     movie?.thumbnail ||
     'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80';
 
